@@ -165,13 +165,15 @@ Tool Calling + 后端服务 + RAG
 
 ### 当前状态
 
-- [ ] 确定第一个项目的业务主题。
-- [ ] 完成项目 1 的最小流式聊天界面。
+- [x] 确定第一个项目的业务主题：Agent Chat Workspace。
+- [x] 实现项目 1 的最小流式聊天链路（待完成端到端手工验收）。
 - [ ] 补齐 FastAPI 与会话存储。
 - [ ] 完成带引用的 RAG。
 - [ ] 完成带人工确认的 Tool Calling。
 - [ ] 接入 Trace / Eval。
 - [ ] Docker 部署并完成作品集整理。
+
+最近更新：2026-08-06。当前代码已具备 Next.js 前端、Vercel AI SDK 的 `useChat` 流式 UI，以及调用 DeepSeek 模型的 `/api/chat` 路由；详情与今日任务见 `project-01-agent-chat.md`、`weekly-log.md`。
 
 ### 后续文件建议
 
@@ -180,4 +182,3 @@ Tool Calling + 后端服务 + RAG
 - `project-01-agent-chat.md`：需求、架构、任务拆分与复盘。
 - `project-02-rag.md`：数据集、评测题、效果记录。
 - `weekly-log.md`：每周学习、踩坑、下周计划。
-

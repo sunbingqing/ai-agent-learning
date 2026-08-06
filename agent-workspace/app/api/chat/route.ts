@@ -16,19 +16,50 @@ import {
 } from 'ai';
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  try {
+    const body: unknown = await req.json();
+    const messages = getMessages(body);
 
-  const companyAI = createOpenAI({
-    baseURL: process.env.OPENAI_BASE_URL,
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+    if (!messages || messages.length === 0) {
+      return Response.json({ error: '请提供至少一条消息。' }, { status: 400 });
+    }
 
-  const result = streamText({
-    model: companyAI.chat('xmyun@alibaba/deepseek-v4-pro'),
-    messages: await convertToModelMessages(messages),
-  });
+    const baseURL = process.env.OPENAI_BASE_URL;
+    const apiKey = process.env.OPENAI_API_KEY;
 
-  return createUIMessageStreamResponse({
-    stream: toUIMessageStream({ stream: result.stream }),
-  });
+    if (!baseURL || !apiKey) {
+      return Response.json(
+        { error: '模型服务尚未配置，请联系管理员。' },
+        { status: 503 },
+      );
+    }
+
+    const companyAI = createOpenAI({ baseURL, apiKey });
+    const result = streamText({
+      model: companyAI.chat('xmyun@alibaba/deepseek-v4-pro'),
+      messages: await convertToModelMessages(messages),
+    });
+
+    return createUIMessageStreamResponse({
+      stream: toUIMessageStream({
+        stream: result.stream,
+        onError: () => '模型服务暂时不可用，请稍后重试。',
+      }),
+    });
+  } catch {
+    return Response.json(
+      { error: '请求处理失败，请稍后重试。' },
+      { status: 500 },
+    );
+  }
+}
+
+function getMessages(body: unknown): UIMessage[] | null {
+  if (!body || typeof body !== 'object' || !('messages' in body)) {
+    return null;
+  }
+
+  const { messages } = body as { messages?: unknown };
+
+  return Array.isArray(messages) ? (messages as UIMessage[]) : null;
 }
