@@ -1,0 +1,7 @@
+# Python local development artifacts
+backend/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Local chat data
+backend/data/*.db
