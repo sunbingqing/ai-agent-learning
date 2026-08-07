@@ -1,11 +1,3 @@
-/*
- * @Author: sunbingqing
- * @Date: 2026-08-06 17:14:52
- * @LastEditors: sunbingqing
- * @LastEditTime: 2026-08-06 18:09:07
- * @Description: 
- * @Copyright: ©2021 杭州杰竞科技有限公司 版权所有
- */
 import { generateId, UIMessage } from 'ai';
 import { existsSync, mkdirSync } from 'fs';
 import { writeFile, readFile } from 'fs/promises';
@@ -51,4 +43,3 @@ function getChatFile(id: string): string {
   if (!existsSync(chatDir)) mkdirSync(chatDir, { recursive: true });
   return chatFile;
 }
-
