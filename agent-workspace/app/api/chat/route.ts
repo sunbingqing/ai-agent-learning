@@ -2,23 +2,22 @@
  * @Author: sunbingqing
  * @Date: 2026-08-05 18:18:29
  * @LastEditors: sunbingqing
- * @LastEditTime: 2026-08-07 09:59:57
+ * @LastEditTime: 2026-08-07 10:08:36
  * @Description: 
  * @Copyright: ©2021 杭州杰竞科技有限公司 版权所有
  */
 import { createOpenAI } from '@ai-sdk/openai';
 import {
   streamText,
-  UIMessage,
   convertToModelMessages,
   createUIMessageStreamResponse,
   toUIMessageStream,
 } from 'ai';
-
+import { saveChat } from '@/util/chat-store';
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const { messages, id } = await req.json();
 
     if (!messages || messages.length === 0) {
       return Response.json({ error: '请提供至少一条消息。' }, { status: 400 });
@@ -43,6 +42,10 @@ export async function POST(req: Request) {
     return createUIMessageStreamResponse({
       stream: toUIMessageStream({
         stream: result.stream,
+        originalMessages: messages,
+        onEnd: async ({ messages }) => {
+          await saveChat({ chatId: id, messages });
+        },
         onError: () => '模型服务暂时不可用，请稍后重试。',
       }),
     });
@@ -52,14 +55,4 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   }
-}
-
-function getMessages(body: unknown): UIMessage[] | null {
-  if (!body || typeof body !== 'object' || !('messages' in body)) {
-    return null;
-  }
-
-  const { messages } = body as { messages?: unknown };
-
-  return Array.isArray(messages) ? (messages as UIMessage[]) : null;
 }
