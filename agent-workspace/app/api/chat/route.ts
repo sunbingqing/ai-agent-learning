@@ -2,7 +2,7 @@
  * @Author: sunbingqing
  * @Date: 2026-08-05 18:18:29
  * @LastEditors: sunbingqing
- * @LastEditTime: 2026-08-06 10:55:27
+ * @LastEditTime: 2026-08-07 09:59:57
  * @Description: 
  * @Copyright: ©2021 杭州杰竞科技有限公司 版权所有
  */
@@ -15,10 +15,10 @@ import {
   toUIMessageStream,
 } from 'ai';
 
+
 export async function POST(req: Request) {
   try {
-    const body: unknown = await req.json();
-    const messages = getMessages(body);
+    const { messages } = await req.json();
 
     if (!messages || messages.length === 0) {
       return Response.json({ error: '请提供至少一条消息。' }, { status: 400 });
