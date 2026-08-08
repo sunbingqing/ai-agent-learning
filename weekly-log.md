@@ -77,7 +77,7 @@
 - 浏览器只请求 Next.js 的 `/api/chat`；FastAPI 的 `PUT /chats/{id}` 是 Next.js 在流结束后发起的服务端请求，因此要在 FastAPI 终端日志而非浏览器 Network 面板中观察。
 - 以 `chat-store.ts` 为适配器边界，能替换底层存储而不改动聊天 UI、动态路由或模型流代码。
 
-#### 下一步
+#### 后续关注
 
-- 在可联网环境完成生产构建，或改用本地字体以消除 Google Fonts 构建依赖。
+- 已改用系统字体，`npm run build -- --webpack` 已完成生产构建；在本地或 CI 再运行默认的 `npm run build`，确认 Turbopack 环境没有端口权限限制。
 - 开始项目 2：带引用的私有文档 RAG，先确定文档来源和一组可重复的测试问题。

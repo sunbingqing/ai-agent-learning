@@ -44,7 +44,7 @@ Next.js Route Handler（streamText，流式响应）
 
 ## 已知验证项
 
-- `npm run build` 已启动到生产构建阶段，但当前环境无法连接 Google Fonts，`next/font/google` 拉取 Geist 字体失败；这不是聊天路由的 TypeScript / 打包错误。联网环境下重新验证即可；若要离线构建，再将字体改为本地字体或移除远程字体依赖。
+- 已移除 `next/font/google` 并改用系统字体，`npm run build -- --webpack` 已完成生产构建，不再依赖 Google Fonts 网络下载。当前 Codex 沙箱的默认 Turbopack 构建受内部端口权限限制；本地或 CI 仍应运行 `npm run build` 验证，若遇到同一环境错误可使用 Webpack 参数。
 - SQLite 使用本地单文件数据库，适合当前单机学习项目；多用户、并发写入和生产部署前再评估 PostgreSQL 等方案。
 
 ## 下一里程碑

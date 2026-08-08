@@ -293,7 +293,8 @@ UPDATE chats SET messages_json = ?, updated_at = ? WHERE id = ?;
 - [x] 新建会话、发送、流式显示、刷新恢复、连续对话均与迁移前一致。
 - [x] 找不到会话、后端不可用、请求体错误时都有可定位的错误，而不是静默丢数据。
 - [x] `npm run lint` 与 `tsc --noEmit` 通过。
-- [ ] `npm run build` 尚未重新验证：当前环境无法连接 Google Fonts，需在联网环境重试或改用本地字体。
+- [x] 已移除 `next/font/google`，改用系统字体；`npm run build -- --webpack` 已完成生产构建，不再依赖 Google Fonts 网络下载。
+- [ ] 当前 Codex 沙箱的默认 Turbopack 构建受内部端口权限限制；在本地或 CI 使用 `npm run build` 验证，若遇到同一环境错误可使用 `npm run build -- --webpack`。
 - [x] `backend/.venv`、`backend/data/*.db`、`.env.local` 未被提交；依赖说明和启动方式已写入 README。
 
 ## 只在卡住时阅读的资料

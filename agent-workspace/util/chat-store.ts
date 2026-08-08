@@ -5,6 +5,13 @@ type ChatResponse = {
   messages: UIMessage[];
 };
 
+export class ChatNotFoundError extends Error {
+  constructor() {
+    super('会话不存在');
+    this.name = 'ChatNotFoundError';
+  }
+}
+
 function getFastApiBaseUrl(): string {
   const baseUrl = process.env.FASTAPI_BASE_URL;
 
@@ -18,6 +25,10 @@ function getFastApiBaseUrl(): string {
 async function ensureSuccess(response: Response): Promise<void> {
   if (response.ok) {
     return;
+  }
+
+  if (response.status === 404) {
+    throw new ChatNotFoundError();
   }
 
   const detail = await response.text();

@@ -84,6 +84,7 @@ FASTAPI_BASE_URL=http://127.0.0.1:8000
 ```bash
 npm run lint
 ./node_modules/.bin/tsc --noEmit
+npm run build -- --webpack
 ```
 
 已手工验证新建会话、流式输出、流结束保存、刷新恢复、连续对话，以及 404 / 422 错误处理。
@@ -93,4 +94,4 @@ npm run lint
 - 当前 SQLite 方案适用于单机学习和开发；多用户或生产部署前应重新评估数据库和并发策略。
 - 回答只在模型流正常结束后保存；中断时不保证保存部分回复。
 - 旧 `.chats` 文件会话已删除，当前版本不迁移旧 JSON 历史。
-- 生产构建在当前环境可能因无法下载 Google Fonts 而失败；需在联网环境重试，或改用本地字体。
+- 应用使用系统字体，不依赖 Google Fonts 网络下载。当前 Codex 沙箱的默认 Turbopack 构建受内部端口权限限制；`npm run build -- --webpack` 已验证通过。
