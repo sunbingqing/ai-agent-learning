@@ -128,11 +128,11 @@ myAI/
 
 ### 0. 准备 Python 环境（约 20 分钟）
 
-- [ ] 确认本机安装 Python 3.11 或更高版本：`python3 --version`。
-- [ ] 在 `backend` 中创建虚拟环境：`python3 -m venv .venv`。
-- [ ] 激活虚拟环境：macOS / Linux 使用 `source .venv/bin/activate`。
-- [ ] 安装最少依赖：`python -m pip install fastapi "uvicorn[standard]"`。
-- [ ] 把依赖记录到 `requirements.txt`，并忽略 `.venv/` 与 `data/*.db`。
+- [x] 确认本机安装 Python 3.11 或更高版本：`python3 --version`。
+- [x] 在 `backend` 中创建虚拟环境：`python3 -m venv .venv`。
+- [x] 激活虚拟环境：macOS / Linux 使用 `source .venv/bin/activate`。
+- [x] 安装最少依赖：`python -m pip install fastapi "uvicorn[standard]"`。
+- [x] 把依赖记录到 `requirements.txt`，并忽略 `.venv/` 与 `data/*.db`。
 
 此时理解：虚拟环境只是给这个 Python 服务单独安装依赖，避免污染系统 Python；它和 Node 的 `node_modules` 是同一个思想。
 
@@ -154,24 +154,24 @@ myAI/
 
 ### 1. 先跑通一个没有数据库的 FastAPI（约 20 分钟）
 
-- [ ] 在 `backend/app/main.py` 创建 `FastAPI()` 应用。
-- [ ] 实现 `GET /health`，返回 `{ "status": "ok" }`。
-- [ ] 用下面命令启动：
+- [x] 在 `backend/app/main.py` 创建 `FastAPI()` 应用。
+- [x] 实现 `GET /health`，返回 `{ "status": "ok" }`。
+- [x] 用下面命令启动：
 
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-- [ ] 打开 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)，在自动生成的文档中试一次 `/health`。
+- [x] 打开 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)，在自动生成的文档中试一次 `/health`。
 
 本步验收：`GET /health` 返回 HTTP 200。这里的 `@app.get("/health")` 就是“把 URL 交给一个函数处理”的路由。
 
 ### 2. 建立 SQLite 和初始化表（约 40 分钟）
 
-- [ ] 只用 Python 标准库 `sqlite3`，暂时不要引入 SQLAlchemy、SQLModel 或 Alembic。
-- [ ] 写一个“获取数据库连接”的函数，数据库路径固定在 `backend/data/chat.db`。
-- [ ] 在应用启动时执行 `CREATE TABLE IF NOT EXISTS chats (...)`。
-- [ ] 每次写入成功后 `commit()`，不再使用连接时关闭它。
+- [x] 只用 Python 标准库 `sqlite3`，暂时不要引入 SQLAlchemy、SQLModel 或 Alembic。
+- [x] 写一个“获取数据库连接”的函数，数据库路径固定在 `backend/data/chat.db`。
+- [x] 在应用启动时执行 `CREATE TABLE IF NOT EXISTS chats (...)`。
+- [x] 每次写入成功后 `commit()`，不再使用连接时关闭它。
 
 本步要会的 SQL 只有三句：
 
@@ -187,10 +187,10 @@ UPDATE chats SET messages_json = ?, updated_at = ? WHERE id = ?;
 
 ### 3. 实现创建和读取 API（约 50 分钟）
 
-- [ ] 创建 `POST /chats`：生成 ID，插入一条 `messages_json = "[]"` 的记录。
-- [ ] 创建 `GET /chats/{chat_id}`：查询记录，解析 `messages_json` 后返回 `messages`。
-- [ ] 用 Pydantic 响应模型明确声明返回的 `id` 与 `messages` 字段。
-- [ ] 找不到 ID 时明确抛出 404，不要返回空数组伪装成“空会话”。
+- [x] 创建 `POST /chats`：生成 ID，插入一条 `messages_json = "[]"` 的记录。
+- [x] 创建 `GET /chats/{chat_id}`：查询记录，解析 `messages_json` 后返回 `messages`。
+- [x] 用 Pydantic 响应模型明确声明返回的 `id` 与 `messages` 字段。
+- [x] 找不到 ID 时明确抛出 404，不要返回空数组伪装成“空会话”。
 
 在这个阶段，`messages` 可以先声明为 `list[dict]` 或较宽松的 JSON 类型。`UIMessage` 的细节来自 TypeScript / AI SDK，不要在第一个 Python 版本里手工复制一套易过期的复杂 Schema。
 
@@ -200,10 +200,10 @@ UPDATE chats SET messages_json = ?, updated_at = ? WHERE id = ?;
 
 ### 4. 实现保存 API（约 40 分钟）
 
-- [ ] 定义 `SaveChatRequest`，只包含 `messages`。
-- [ ] 创建 `PUT /chats/{chat_id}`，把请求中的数组 `json.dumps()` 后更新到 `messages_json`。
-- [ ] 更新时同步修改 `updated_at`。
-- [ ] 用一条含有用户消息和助手消息的假数据测试 `PUT` 后再 `GET`，确认 JSON 结构没有被改变。
+- [x] 定义 `SaveChatRequest`，只包含 `messages`。
+- [x] 创建 `PUT /chats/{chat_id}`，把请求中的数组 `json.dumps()` 后更新到 `messages_json`。
+- [x] 更新时同步修改 `updated_at`。
+- [x] 用一条含有用户消息和助手消息的假数据测试 `PUT` 后再 `GET`，确认 JSON 结构没有被改变。
 
 本步验收：同一条会话在 `PUT` 后的 `GET` 返回内容与提交的 `messages` 完全一致（字段顺序可以不同）。
 
@@ -217,22 +217,22 @@ UPDATE chats SET messages_json = ?, updated_at = ? WHERE id = ?;
 | `loadChat(id)` | 读 JSON 文件 | `GET ${FASTAPI_BASE_URL}/chats/{id}` |
 | `saveChat({ id, messages })` | 覆盖 JSON 文件 | `PUT ${FASTAPI_BASE_URL}/chats/{id}` |
 
-- [ ] 在 `agent-workspace/.env.local` 设置 `FASTAPI_BASE_URL=http://127.0.0.1:8000`。
-- [ ] **不要**使用 `NEXT_PUBLIC_FASTAPI_BASE_URL`：当前请求只发生在 Next.js 服务端。
-- [ ] 对 `fetch` 的非 2xx 响应抛出带状态码的错误，而不是悄悄返回空数组。
-- [ ] 保留 `createChat`、`loadChat`、`saveChat` 的函数签名，让页面和流式路由不需要改动。
-- [ ] 删除或停止使用 `fs`、`fs/promises`、`path` 和 `.chats` 目录逻辑。
+- [x] 在 `agent-workspace/.env.local` 设置 `FASTAPI_BASE_URL=http://127.0.0.1:8000`。
+- [x] **不要**使用 `NEXT_PUBLIC_FASTAPI_BASE_URL`：当前请求只发生在 Next.js 服务端。
+- [x] 对 `fetch` 的非 2xx 响应抛出带状态码的错误，而不是悄悄返回空数组。
+- [x] 保留 `createChat`、`loadChat`、`saveChat` 的函数签名，让页面和流式路由不需要改动。
+- [x] 删除或停止使用 `fs`、`fs/promises`、`path` 和 `.chats` 目录逻辑。
 
 写 Next.js 代码前，先阅读项目的 `agent-workspace/AGENTS.md` 要求的 Next.js 16 本地文档；版本行为不应靠旧教程猜测。
 
 ### 6. 做行为验收（约 30 分钟）
 
-- [ ] 同时启动 FastAPI（8000）与 Next.js（通常是 3000）。
-- [ ] 访问 `/chat`，确认 URL 变为 `/chat/<id>`，且 FastAPI / SQLite 有新记录。
-- [ ] 发送一条消息，确认文字仍逐段显示，而不是等整段回答结束才出现。
-- [ ] 等模型输出结束后刷新页面，确认整段历史恢复。
-- [ ] 连续发送第二条消息，再刷新，确认两轮都存在。
-- [ ] 手动输入不存在的 `/chat/<id>`，确认页面报错清晰，而不是假装没有历史。
+- [x] 同时启动 FastAPI（8000）与 Next.js（通常是 3000）。
+- [x] 访问 `/chat`，确认 URL 变为 `/chat/<id>`，且 FastAPI / SQLite 有新记录。
+- [x] 发送一条消息，确认文字仍逐段显示，而不是等整段回答结束才出现。
+- [x] 等模型输出结束后刷新页面，确认整段历史恢复。
+- [x] 连续发送第二条消息，再刷新，确认两轮都存在。
+- [x] 手动输入不存在的 `/chat/<id>`，确认页面报错清晰，而不是假装没有历史。
 
 ## 关于“流式保存”的真实含义
 
@@ -287,13 +287,14 @@ UPDATE chats SET messages_json = ?, updated_at = ? WHERE id = ?;
 
 满足以下全部条件，就可以把这个里程碑标记完成：
 
-- [ ] `.chats` 不再是运行时的会话数据来源。
-- [ ] FastAPI 在单独进程运行，并能从 `/docs` 测试四个接口。
-- [ ] SQLite 中存在会话记录，重启 FastAPI 后记录仍然存在。
-- [ ] 新建会话、发送、流式显示、刷新恢复、连续对话均与迁移前一致。
-- [ ] 找不到会话、后端不可用、请求体错误时都有可定位的错误，而不是静默丢数据。
-- [ ] `npm run lint` 与 `npm run build` 通过；若构建仍因项目已知的 Google Fonts 联网问题失败，记录为环境限制而不是忽略其他报错。
-- [ ] `backend/.venv`、`backend/data/*.db`、`.env.local` 未被提交；依赖说明和启动方式已写入 README。
+- [x] `.chats` 不再是运行时的会话数据来源，并已按需求删除旧 JSON 数据。
+- [x] FastAPI 在单独进程运行，并能从 `/docs` 测试四个接口。
+- [x] SQLite 中存在会话记录，重启 FastAPI 后记录仍然存在。
+- [x] 新建会话、发送、流式显示、刷新恢复、连续对话均与迁移前一致。
+- [x] 找不到会话、后端不可用、请求体错误时都有可定位的错误，而不是静默丢数据。
+- [x] `npm run lint` 与 `tsc --noEmit` 通过。
+- [ ] `npm run build` 尚未重新验证：当前环境无法连接 Google Fonts，需在联网环境重试或改用本地字体。
+- [x] `backend/.venv`、`backend/data/*.db`、`.env.local` 未被提交；依赖说明和启动方式已写入 README。
 
 ## 只在卡住时阅读的资料
 

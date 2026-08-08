@@ -168,13 +168,13 @@ Tool Calling + 后端服务 + RAG
 - [x] 确定第一个项目的业务主题：Agent Chat Workspace。
 - [x] 完成项目 1 的最小流式聊天链路与端到端手工验收。
 - [x] 完成本地文件会话持久化：新建会话、读取历史、保存完整回复与刷新恢复。
-- [ ] 补齐 FastAPI 与会话存储。
+- [x] 补齐 FastAPI + SQLite 会话存储：独立后端、创建 / 读取 / 保存 API，以及流结束后的跨服务保存。
 - [ ] 完成带引用的 RAG。
 - [ ] 完成带人工确认的 Tool Calling。
 - [ ] 接入 Trace / Eval。
 - [ ] Docker 部署并完成作品集整理。
 
-最近更新：2026-08-07。当前代码已具备 Next.js 前端、Vercel AI SDK 的 `useChat` 流式 UI、DeepSeek 模型调用，以及基于本地 JSON 文件的会话持久化；详情与今日任务见 `project-01-agent-chat.md`、`weekly-log.md`。
+最近更新：2026-08-08。当前代码已具备 Next.js 前端、Vercel AI SDK 的 `useChat` 流式 UI、DeepSeek 模型调用，以及 FastAPI + SQLite 会话持久化；新建会话、流式完成后保存和刷新恢复已完成验收。详情见 `project-01-agent-chat.md`、`weekly-log.md`。
 
 ### 后续文件建议
 

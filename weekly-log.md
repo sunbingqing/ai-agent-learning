@@ -57,3 +57,27 @@
 
 - 阅读并补齐项目 README：启动方式、环境变量和当前能力边界。
 - 学习 FastAPI + SQLite，将 `loadChat` / `saveChat` 的文件实现替换为服务端 API 与数据库实现。
+
+### 2026-08-08
+
+#### 已完成
+
+- 使用 Python 3.11 虚拟环境安装 FastAPI 与 Uvicorn，并完成 `/health` 服务验证。
+- 使用 Python 标准库 `sqlite3` 创建 `chats` 表；会话 ID、完整消息 JSON 和创建 / 更新时间均写入 SQLite。
+- 实现并在 FastAPI `/docs` 验证 `POST /chats`、`GET /chats/{id}`、`PUT /chats/{id}`，覆盖 201、404 和 422 响应。
+- 将 Next.js 的 `chat-store.ts` 从文件读写替换为服务端 `fetch` 适配器；保留 `createChat`、`loadChat`、`saveChat` 的调用接口。
+- 完成端到端手工验收：新建会话、浏览器流式显示、模型结束后由 Next.js 调用 FastAPI 保存、刷新后恢复历史、连续对话均正常。
+- 生成 `backend/requirements.txt`；`npm run lint` 和 `tsc --noEmit` 通过。
+- 删除已废弃的 `.chats` 本地 JSON 历史；当前版本不迁移旧数据。
+
+#### 学到什么
+
+- FastAPI 负责 HTTP 接口和输入 / 输出校验；Uvicorn 负责运行 Python Web 服务。
+- SQLite 是单文件数据库。`TEXT PRIMARY KEY` 为每条会话提供唯一 ID，JSON 文本能在不改变现有消息结构的情况下完成低风险迁移。
+- 浏览器只请求 Next.js 的 `/api/chat`；FastAPI 的 `PUT /chats/{id}` 是 Next.js 在流结束后发起的服务端请求，因此要在 FastAPI 终端日志而非浏览器 Network 面板中观察。
+- 以 `chat-store.ts` 为适配器边界，能替换底层存储而不改动聊天 UI、动态路由或模型流代码。
+
+#### 下一步
+
+- 在可联网环境完成生产构建，或改用本地字体以消除 Google Fonts 构建依赖。
+- 开始项目 2：带引用的私有文档 RAG，先确定文档来源和一组可重复的测试问题。

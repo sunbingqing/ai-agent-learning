@@ -1,19 +1,53 @@
-import { generateId, UIMessage } from 'ai';
-import { existsSync, mkdirSync } from 'fs';
-import { writeFile, readFile } from 'fs/promises';
-import path from 'path';
+import { UIMessage } from 'ai';
 
-// Treat chat IDs as opaque tokens before using them in file paths.
-const chatIdRegex = /^[A-Za-z0-9_-]+$/;
+type ChatResponse = {
+  id: string;
+  messages: UIMessage[];
+};
 
-export async function loadChat(id: string): Promise<UIMessage[]> {
-  return JSON.parse(await readFile(getChatFile(id), 'utf8'));
+function getFastApiBaseUrl(): string {
+  const baseUrl = process.env.FASTAPI_BASE_URL;
+
+  if (!baseUrl) {
+    throw new Error('FASTAPI_BASE_URL is not configured');
+  }
+
+  return baseUrl.replace(/\/$/, '');
+}
+
+async function ensureSuccess(response: Response): Promise<void> {
+  if (response.ok) {
+    return;
+  }
+
+  const detail = await response.text();
+  throw new Error(
+    `Chat storage API request failed (${response.status}): ${detail}`,
+  );
 }
 
 export async function createChat(): Promise<string> {
-  const id = generateId(); // generate a unique chat ID
-  await writeFile(getChatFile(id), '[]'); // create an empty chat file
-  return id;
+  const response = await fetch(`${getFastApiBaseUrl()}/chats`, {
+    method: 'POST',
+    cache: 'no-store',
+  });
+
+  await ensureSuccess(response);
+
+  const chat = (await response.json()) as ChatResponse;
+  return chat.id;
+}
+
+export async function loadChat(id: string): Promise<UIMessage[]> {
+  const response = await fetch(
+    `${getFastApiBaseUrl()}/chats/${encodeURIComponent(id)}`,
+    { cache: 'no-store' },
+  );
+
+  await ensureSuccess(response);
+
+  const chat = (await response.json()) as ChatResponse;
+  return chat.messages;
 }
 
 export async function saveChat({
@@ -23,23 +57,17 @@ export async function saveChat({
   chatId: string;
   messages: UIMessage[];
 }): Promise<void> {
-  const content = JSON.stringify(messages, null, 2);
-  await writeFile(getChatFile(chatId), content);
-}
+  const response = await fetch(
+    `${getFastApiBaseUrl()}/chats/${encodeURIComponent(chatId)}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messages }),
+      cache: 'no-store',
+    },
+  );
 
-function getChatFile(id: string): string {
-  if (!chatIdRegex.test(id)) {
-    throw new Error('Invalid chat ID');
-  }
-
-  const chatDir = path.resolve(process.cwd(), '.chats');
-  const chatFile = path.resolve(chatDir, `${id}.json`);
-
-  // Defense in depth: keep the resolved file inside the chat directory.
-  if (!chatFile.startsWith(`${chatDir}${path.sep}`)) {
-    throw new Error('Invalid chat ID');
-  }
-
-  if (!existsSync(chatDir)) mkdirSync(chatDir, { recursive: true });
-  return chatFile;
+  await ensureSuccess(response);
 }
