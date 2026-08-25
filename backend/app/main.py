@@ -22,6 +22,13 @@ class ChatResponse(BaseModel):
 class SaveChatRequest(BaseModel):
     messages: list[dict[str, Any]]
 
+class ChatListItem(BaseModel):
+    id: str
+    updated_at: str
+
+
+class ChatListResponse(BaseModel):
+    chats: list[ChatListItem]
 
 @app.get("/health")
 def health_check():
